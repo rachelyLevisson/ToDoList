@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "z3ho0J1bSrA=",
+  "dgSpecHash": "Q7ypriKmpDo=",
   "success": true,
-  "projectFilePath": "C:\\Users\\לויסון\\Desktop\\TodoApi\\TodoApi.csproj",
+  "projectFilePath": "C:\\Users\\לויסון\\Desktop\\פרקטי קוד 3\\TodoApi\\TodoApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\לויסון\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\לויסון\\.nuget\\packages\\microsoft.aspnetcore.cors\\2.3.0\\microsoft.aspnetcore.cors.2.3.0.nupkg.sha512",

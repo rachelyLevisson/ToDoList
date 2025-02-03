@@ -19,53 +19,98 @@ builder.Services.AddCors(options =>
         });
 });
 builder.Services.AddDbContext<ToDoDbContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("ToDoDB"), 
+    options.UseMySql(builder.Configuration.GetConnectionString("ToDoDB"),
     ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("ToDoDB"))));
 
 
-        
+
 
 var app = builder.Build();
-
-app.UseSwagger();
-app.UseSwaggerUI();
-
-
-app.UseCors("AllowAllOrigins");
-
-app.MapGet("/api/item",async (ToDoDbContext db) => await  db.Items.ToListAsync());
-
-
-app.MapGet("/api/items/{id}", async (int id, ToDoDbContext db) =>
+app.UseCors("AllowAll");
+if (app.Environment.IsDevelopment())
 {
-    var item = await db.Items.FindAsync(id);
-    return item is not null ? Results.Ok(item) : Results.NotFound();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+
+
+
+
+
+app.MapGet("/item", async (ToDoDbContext db) =>
+{
+    try
+    {
+        var items = await db.Items.ToListAsync();
+        return Results.Ok(items);
+        System.Console.WriteLine("come!!");
+    }
+    catch (Exception e)
+    {
+        return Results.Problem("oh no!! is problem to error 500....", statusCode: 500);
+    }
 });
 
-app.MapPost("/api/items", async (Item item, ToDoDbContext db) =>
+
+app.MapGet("/item/{id}", async (int id, ToDoDbContext db) =>
 {
-    db.Items.Add(item);
-    await db.SaveChangesAsync();
-    return Results.Created($"/api/items/{item.Id}", item);
+    try
+    {
+        var item = await db.Items.FindAsync(id);
+        return item is not null ? Results.Ok(item) : Results.NotFound();
+    }
+    catch
+    {
+        return Results.Problem("not good!!!", statusCode: 500);
+    }
 });
 
-app.MapPut("/api/items/{id}", async (int id, Item item, ToDoDbContext db) =>
+app.MapPost("/item", async (Item item, ToDoDbContext db) =>
 {
-    if (id != item.Id) return Results.BadRequest();
-
-    db.Entry(item).State = EntityState.Modified;
-    await db.SaveChangesAsync();
-    return Results.NoContent();
+    try
+    {
+        db.Items.Add(item);
+        await db.SaveChangesAsync();
+        return Results.Created($"/api/items/{item.Id}", item);
+    }
+    catch
+    {
+        return Results.Problem("not good!!!", statusCode: 500);
+    }
 });
 
-app.MapDelete("/api/items/{id}", async (int id, ToDoDbContext db) =>
+app.MapPut("/item/{id}", async (int id, Item item, ToDoDbContext db) =>
 {
-    var item = await db.Items.FindAsync(id);
-    if (item is null) return Results.NotFound();
+    try
+    {
+        if (id != item.Id) return Results.BadRequest();
 
-    db.Items.Remove(item);
-    await db.SaveChangesAsync();
-    return Results.NoContent();
+        db.Entry(item).State = EntityState.Modified;
+        await db.SaveChangesAsync();
+        return Results.NoContent();
+    }
+    catch
+    {
+        return Results.Problem("not good!!!", statusCode: 500);
+    }
+});
+
+app.MapDelete("/item/{id}", async (int id, ToDoDbContext db) =>
+{
+    try
+    {
+        var item = await db.Items.FindAsync(id);
+        if (item is null) return Results.NotFound();
+
+        db.Items.Remove(item);
+        await db.SaveChangesAsync();
+        return Results.NoContent();
+    }
+    catch
+    {
+        return Results.Problem("not good!!!", statusCode: 500);
+    }
 });
 
 app.Run();
